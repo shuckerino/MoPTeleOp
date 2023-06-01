@@ -16,7 +16,7 @@
 
 # ignore mlagents training files
 summaries
-models
+#models
 
 
 # Never ignore Asset meta data
