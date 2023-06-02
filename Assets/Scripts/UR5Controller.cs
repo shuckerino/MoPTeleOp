@@ -15,7 +15,9 @@ public class UR5Controller : MonoBehaviour {
     public float[] jointValues = new float[7];
     private GameObject[] jointList = new GameObject[6];
     private float[] upperLimit = { 180f, 180f, 180f, 180f, 180f, 180f };
-    private float[] lowerLimit = { -180f, -180f, -180f, -180f, -180f, -180f };
+    private float[] lowerLimit = { -180f, -180f, -180f, -180f, -180f, -180f };    
+    private float[] jointOffset = { 0f, 0f, 0f, 90f, 0f, 0f };
+    private float[] jointSign = { -1f, 1f, 1f, 1f, -1f, 1f };
 
 
 
@@ -30,7 +32,7 @@ public class UR5Controller : MonoBehaviour {
         for ( int i = 0; i < 6; i ++) {
             Vector3 currentRotation = jointList[i].transform.localEulerAngles;
             // Debug.Log(currentRotation);
-            currentRotation.z = jointValues[i];
+            currentRotation.z = jointSign[i] * jointValues[i] + jointOffset[i];
             jointList[i].transform.localEulerAngles = currentRotation;
         }
 
