@@ -10,7 +10,8 @@ public class UR5Controller : MonoBehaviour {
 
     public GameObject RobotBase;
 
-    public PincherController pincherController;
+    //public PincherController pincherController;
+    public GripperController gripperController;
 
     public float[] jointValues = new float[7];
     private GameObject[] jointList = new GameObject[6];
@@ -36,8 +37,9 @@ public class UR5Controller : MonoBehaviour {
             jointList[i].transform.localEulerAngles = currentRotation;
         }
 
-        pincherController.grip = jointValues[6];        
-	}
+        //pincherController.grip = jointValues[6];
+        gripperController.gripRatio = jointValues[6];
+    }
 
     void OnGUI() {
         int boundary = 20;

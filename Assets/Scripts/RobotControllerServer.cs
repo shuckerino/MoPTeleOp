@@ -19,6 +19,8 @@ public class RobotControllerServer : MonoBehaviour
 	public int connectionPort = 11001;
 
 	public UR5Controller ur5Controller;
+	public GazeController gazeController;
+	public BrickManager brickManager;
 
 	#region private members 	
 	/// <summary> 	
@@ -43,6 +45,8 @@ public class RobotControllerServer : MonoBehaviour
 		Acknowledge,
 		Goodbye,
 		UpdatePose,
+		InitBrick,
+		GazePos
 	}
 
 	// Use this for initialization
@@ -75,22 +79,39 @@ public class RobotControllerServer : MonoBehaviour
 								
 				string[] cols = payload.Split(',');
 
-				if (cols.Length == 7)
+				if (cols.Length == 14)
 				{
-					float[] jointValues = new float[7];
+					List<float> values = new List<float>();
 
 					int iVal = 0;
 					foreach (string col in cols)
 					{
-						jointValues[iVal] = float.Parse(col);
+						values.Add(float.Parse(col));
 						iVal++;
 					}
 
+					// Get joint portion of message
+					float[] jointValues = values.GetRange(0, 7).ToArray();
 					ur5Controller.jointValues = jointValues;
+
+					// Get brick portion of message
+					Vector3 brickPos = new Vector3(values[7], values[8], values[9]);
+					Quaternion brickRot = new Quaternion(values[10], values[11], values[12], values[13]);
+					brickManager.UpdateMainBrickPose(brickPos, brickRot);
 				}
 
 				// dispatcher_.Enqueue(appManager_.ShowKeyboard);
 				replyMessage = "Pose updated.";
+				break;
+
+			case RobotControllerMessageType.InitBrick:
+				brickManager.InitializeBricks(payload);
+				replyMessage = "Layout initialized.";
+				break;
+
+			case RobotControllerMessageType.GazePos:
+				Vector3 gazePos = gazeController.GazePosition();
+				replyMessage = String.Format("{0:F4},{1:F4},{2:F4}", gazePos.x, gazePos.y, gazePos.z);
 				break;
 
 			default:
@@ -98,8 +119,6 @@ public class RobotControllerServer : MonoBehaviour
 				Debug.Log("Unrecognized client message.");
 				break;
 		}
-
-        Debug.Log("reply: " + message);
 
         return replyMessage;
     }

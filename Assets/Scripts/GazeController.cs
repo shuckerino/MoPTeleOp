@@ -9,6 +9,7 @@ public class GazeController : MonoBehaviour
     public GameObject gazeCursor;
 
     private List<Vector3> pointBuffer_;
+    private Vector3 gazePos_;
     private int bufferSize_ = 10;
 
     // Start is called before the first frame update
@@ -55,6 +56,8 @@ public class GazeController : MonoBehaviour
 
             meanPoint = meanPoint / bufferSize_;
 
+            gazePos_ = meanPoint;
+
             gazeCursor.transform.position = meanPoint;
             gazeCursor.transform.up = reHitInfo.normal;
         }
@@ -63,5 +66,10 @@ public class GazeController : MonoBehaviour
             pointBuffer_.Clear();
             gazeCursor.SetActive(false);
         }
+    }
+
+    public Vector3 GazePosition()
+    {
+        return gazePos_;
     }
 }
