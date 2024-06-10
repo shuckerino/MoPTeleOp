@@ -42,7 +42,7 @@ public class UR5Controller : MonoBehaviour {
         }
 
         //pincherController.grip = jointValues[6];
-        gripperController.gripRatio = jointValues[6];
+        //gripperController.gripRatio = jointValues[6];
     }
 
     void OnGUI() {

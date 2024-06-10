@@ -841,7 +841,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &278723512
 Transform:
   m_ObjectHideFlags: 0
@@ -1926,7 +1926,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RobotBase: {fileID: 563973673}
-  pincherController: {fileID: 893194412}
+  gripperController: {fileID: 0}
   jointValues:
   - 0
   - 0
@@ -1980,6 +1980,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   connectionPort: 11001
   ur5Controller: {fileID: 893194410}
+  gazeController: {fileID: 0}
+  brickManager: {fileID: 0}
 --- !u!1 &923555327
 GameObject:
   m_ObjectHideFlags: 0
