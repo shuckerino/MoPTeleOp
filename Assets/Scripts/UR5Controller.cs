@@ -16,8 +16,8 @@ public class UR5Controller : MonoBehaviour {
     private GameObject[] jointList = new GameObject[6];
     private float[] upperLimit = { 180f, 180f, 180f, 180f, 180f, 180f };
     private float[] lowerLimit = { -180f, -180f, -180f, -180f, -180f, -180f };    
-    private float[] jointOffset = { 0f, 0f, 0f, 90f, 0f, 0f };
-    private float[] jointSign = { -1f, 1f, 1f, 1f, -1f, 1f };
+    private float[] jointOffset = { 0f, 0f, 0f, 0f, 0f, 0f };
+    private float[] jointSign = { 1f, 1f, 1f, 1f, -1f, 1f };
 
 
 
@@ -32,8 +32,12 @@ public class UR5Controller : MonoBehaviour {
         for ( int i = 0; i < 6; i ++) {
             Vector3 currentRotation = jointList[i].transform.localEulerAngles;
             // Debug.Log(currentRotation);
-            currentRotation.z = jointSign[i] * jointValues[i] + jointOffset[i];
-            jointList[i].transform.localEulerAngles = currentRotation;
+            if ((i == 1) | (i == 4) | (i == 5))
+                currentRotation.y = jointSign[i] * jointValues[i] + jointOffset[i];
+            else
+                currentRotation.z = jointSign[i] * jointValues[i] + jointOffset[i];
+            
+            jointList[i].transform.localEulerAngles = currentRotation; // * Mathf.PI/180.0f;
         }
 
         pincherController.grip = jointValues[6];        
@@ -65,22 +69,22 @@ public class UR5Controller : MonoBehaviour {
     void initializeJoints() {
         var RobotChildren = RobotBase.GetComponentsInChildren<Transform>();
         for (int i = 0; i < RobotChildren.Length; i++) {
-            if (RobotChildren[i].name == "control0") {
+            if (RobotChildren[i].name == "Joint_1") {
                 jointList[0] = RobotChildren[i].gameObject;
             }
-            else if (RobotChildren[i].name == "control1") {
+            else if (RobotChildren[i].name == "Joint_2") {
                 jointList[1] = RobotChildren[i].gameObject;
             }
-            else if (RobotChildren[i].name == "control2") {
+            else if (RobotChildren[i].name == "Joint_3") {
                 jointList[2] = RobotChildren[i].gameObject;
             }
-            else if (RobotChildren[i].name == "control3") {
+            else if (RobotChildren[i].name == "Joint_4") {
                 jointList[3] = RobotChildren[i].gameObject;
             }
-            else if (RobotChildren[i].name == "control4") {
+            else if (RobotChildren[i].name == "Joint_5") {
                 jointList[4] = RobotChildren[i].gameObject;
             }
-            else if (RobotChildren[i].name == "control5") {
+            else if (RobotChildren[i].name == "Joint_6") {
                 jointList[5] = RobotChildren[i].gameObject;
             }
         }
