@@ -27,7 +27,7 @@ s.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 100)
 
 # Enum of message types, must match InterboClient
 class MessageType:
-    Invalid, Acknowledge, Goodbye, PoseUpdate = range(4)
+    Invalid, Acknowledge, Goodbye, PoseUpdate, InitBrick, GazePos  = range(6)
 
 # Example message: 
 # update_pose -180,30,75,-10,90,0,1
@@ -52,7 +52,17 @@ try:
                 msg = "%s\t%s\n" % (str(int(MessageType.PoseUpdate)), poseArr)
             else:
                 msg = ''
-                print('Invalid test config')
+                print('Invalid message format')
+        elif ("init_brick" in msg):            
+            msgSplit = msg.split(' ')
+            if (len(msgSplit) == 2):
+                poseArr = msgSplit[1]
+                msg = "%s\t%s\n" % (str(int(MessageType.InitBrick)), poseArr)
+            else:
+                msg = ''
+                print('Invalid message format')
+        elif ("gaze_pos" in msg):
+            msg = "%s\t%s\n" % (str(int(MessageType.GazePos)), "gaze_pos_request")                
 
         s.send(msg.encode('utf-8'))
         
