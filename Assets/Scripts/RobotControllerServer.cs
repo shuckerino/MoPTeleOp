@@ -18,7 +18,8 @@ public class RobotControllerServer : MonoBehaviour
 	[Tooltip("The connection port on the machine to use.")]
 	public int connectionPort = 11001;
 
-	public UR5Controller ur5Controller;
+	//public UR5Controller ur5Controller;
+	public UR10Controller ur10Controller;
 	public GazeController gazeController;
 	public BrickManager brickManager;
 
@@ -76,8 +77,9 @@ public class RobotControllerServer : MonoBehaviour
 		switch (messageType)
 		{
 			case RobotControllerMessageType.UpdatePose:
-								
-				string[] cols = payload.Split(',');
+
+                Debug.Log($"Update position!");
+                string[] cols = payload.Split(',');
 
 				if (cols.Length == 14)
 				{
@@ -92,12 +94,13 @@ public class RobotControllerServer : MonoBehaviour
 
 					// Get joint portion of message
 					float[] jointValues = values.GetRange(0, 7).ToArray();
-					ur5Controller.jointValues = jointValues;
+					//ur5Controller.jointValues = jointValues;
+					ur10Controller.jointValues = jointValues;
 
 					// Get brick portion of message
 					Vector3 brickPos = new Vector3(values[7], values[8], values[9]);
 					Quaternion brickRot = new Quaternion(values[10], values[11], values[12], values[13]);
-					brickManager.UpdateMainBrickPose(brickPos, brickRot);
+					//brickManager.UpdateMainBrickPose(brickPos, brickRot);
 				}
 
 				// dispatcher_.Enqueue(appManager_.ShowKeyboard);
@@ -169,9 +172,14 @@ public class RobotControllerServer : MonoBehaviour
 							string clientMessage = Encoding.ASCII.GetString(incommingData);
 							Debug.Log("client message received as: " + clientMessage);
 
-							string reply = HandleClientMessage(clientMessage);
+                            // Split messages by newline
+                            string[] messages = clientMessage.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-							SendServerMessage(reply);
+                            foreach (string message in messages)
+                            {
+                                string reply = HandleClientMessage(message);
+                                SendServerMessage(reply);
+                            }
 						}
 					}
 				}

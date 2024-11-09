@@ -8,7 +8,6 @@ using System.Collections;
 
 public class UR10Controller : MonoBehaviour
 {
-
     public GameObject RobotBase;
 
     //public PincherController pincherController;
@@ -20,6 +19,7 @@ public class UR10Controller : MonoBehaviour
     private float[] lowerLimit = { -180f, -180f, -180f, -180f, -180f, -180f };
     private float[] jointOffset = { 0f, 0f, 0f, 0f, 0f, 0f };
     private float[] jointSign = { 1f, 1f, -1f, 1f, -1f, 1f };
+    private bool useQuaternion = true;
 
     // Use this for initialization
     void Start()
@@ -31,16 +31,35 @@ public class UR10Controller : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
+        // joint values are in degrees
+        Debug.Log($"Update UR10 with {jointValues}!");
         for (int i = 0; i < 6; i++)
         {
-            Vector3 currentRotation = jointList[i].transform.localEulerAngles;
-            // Debug.Log(currentRotation);
-            if ((i == 0) | (i == 4))
-                currentRotation.y = jointSign[i] * jointValues[i] + jointOffset[i];
-            else
-                currentRotation.x = jointSign[i] * jointValues[i] + jointOffset[i];
+            if (useQuaternion)
+            {
+                float angleInDegrees = jointSign[i] * jointValues[i] + jointOffset[i];
 
-            jointList[i].transform.localEulerAngles = currentRotation; // * Mathf.PI/180.0f;
+                // Determine axis of rotation based on joint index
+                Vector3 rotationAxis = (i == 0 || i == 4) ? Vector3.up : Vector3.right;
+
+                // Convert to quaternion
+                Quaternion targetRotation = Quaternion.AngleAxis(angleInDegrees, rotationAxis);
+
+                // Apply the rotation to the joint
+                jointList[i].transform.localRotation = targetRotation;
+            }
+            else // use euler angles
+            {
+                Vector3 currentRotation = jointList[i].transform.localEulerAngles;
+
+                // Debug.Log(currentRotation);
+                if ((i == 0) | (i == 4))
+                    currentRotation.y = jointSign[i] * jointValues[i] + jointOffset[i];
+                else
+                    currentRotation.x = jointSign[i] * jointValues[i] + jointOffset[i];
+
+                jointList[i].transform.localEulerAngles = currentRotation; // * Mathf.PI/180.0f;
+            }
         }
 
         //pincherController.grip = jointValues[6];
