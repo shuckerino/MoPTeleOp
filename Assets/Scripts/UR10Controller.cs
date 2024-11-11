@@ -82,6 +82,8 @@ public class UR10Controller : MonoBehaviour
         {
             GUI.Label(new Rect(boundary, boundary + (i * 2 + 1) * labelHeight, labelHeight * 4, labelHeight), "Joint " + i + ": ");
             jointValues[i] = GUI.HorizontalSlider(new Rect(boundary + labelHeight * 4, boundary + (i * 2 + 1) * labelHeight + labelHeight / 4, labelHeight * 5, labelHeight), jointValues[i], lowerLimit[i], upperLimit[i]);
+            GUI.Label(new Rect(boundary + labelHeight * 4, boundary + (i * 2 + 2) * labelHeight, labelHeight * 5, labelHeight), $"{jointValues[i]:F1}°"); // Display angle to 1 decimal place
+
         }
 
         // Gripper value
