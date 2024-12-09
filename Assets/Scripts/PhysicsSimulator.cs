@@ -55,13 +55,13 @@ public class PhysicsSimulator : MonoBehaviour
                 //yield return new WaitForFixedUpdate();
 
                 // Check for collisions
-                if (CheckForCollision())
+                if (CheckForCollision(colliderToCheck[a]))
                 {
                     collisionAngleValues.Add(angleToSimulate);
                 }
             }
 
-            //jointTransforms[a].localRotation = initialJointRotation;
+            jointTransforms[a].localRotation = initialJointRotation;
 
             if (collisionAngleValues.Count > 0)
                 collisionAngles.Add(a, collisionAngleValues);
@@ -86,24 +86,21 @@ public class PhysicsSimulator : MonoBehaviour
     //}
 
 
-    private bool CheckForCollision()
+    private bool CheckForCollision(Collider currentCollider)
     {
         foreach (var colliderA in colliderToCheck)
         {
-            foreach (var colliderB in colliderToCheck)
+            if (colliderA != currentCollider)
             {
-                if (colliderA != colliderB)
-                {
-                    Vector3 direction;
-                    float distance;
+                Vector3 direction;
+                float distance;
 
-                    if (Physics.ComputePenetration(
-                        colliderA, colliderA.transform.position, colliderA.transform.rotation,
-                        colliderB, colliderB.transform.position, colliderB.transform.rotation,
-                        out direction, out distance))
-                    {
-                        return true; // Collision detected
-                    }
+                if (Physics.ComputePenetration(
+                    colliderA, colliderA.transform.position, colliderA.transform.rotation,
+                    currentCollider, currentCollider.transform.position, currentCollider.transform.rotation,
+                    out direction, out distance))
+                {
+                    return true; // Collision detected
                 }
             }
         }
