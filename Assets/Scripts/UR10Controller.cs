@@ -23,14 +23,17 @@ public class UR10Controller : MonoBehaviour
     private float[] lowerLimit = { -180f, -180f, -180f, -180f, -180f, -180f };
     private float[] jointOffset = { 0f, 0f, 0f, 0f, 0f, 0f };
     private float[] jointSign = { 1f, 1f, -1f, 1f, -1f, 1f };
-    float _interval = 2f;
+    float _interval = 0.5f;
     float _time;
 
-    public TextMeshPro remainingJointAngleBase;
-    public TextMeshPro remainingJointAngleShoulder;
-    public TextMeshPro remainingJointAngleUpperArm;
-    public TextMeshPro remainingJointAngleForearm;
-
+    [SerializeField]
+    private TextMeshProUGUI Join1Limits;
+    [SerializeField]
+    private TextMeshProUGUI Join2Limits;
+    [SerializeField]
+    private TextMeshProUGUI Join3Limits;
+    [SerializeField]
+    private TextMeshProUGUI Join4Limits;
 
     // Use this for initialization
     void Start()
@@ -41,11 +44,12 @@ public class UR10Controller : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
+        float[] currentAngles = new float[6];
         // joint values are in degrees
         for (int i = 0; i < 6; i++)
         {
             float angleInDegrees = jointSign[i] * jointValues[i] + jointOffset[i];
-
+            currentAngles[i] = angleInDegrees;
             // Determine axis of rotation based on joint index
             Vector3 rotationAxis = (i == 0 || i == 4) ? Vector3.up : Vector3.right;
 
@@ -60,10 +64,27 @@ public class UR10Controller : MonoBehaviour
         {
             simulator = FindObjectOfType<PhysicsSimulator>();
             Dictionary<int, List<float>> collisionAngles =
-            simulator.SimulateJointAngles(jointSign, jointValues, jointOffset);
+            simulator.SimulateJointAngles(currentAngles);
             foreach (var keyValuePair in collisionAngles)
             {
                 Debug.Log($"For angle {keyValuePair.Key} the collisions are {string.Join(", ", keyValuePair.Value)}");
+
+                //if (keyValuePair.Key == 0)
+                //{
+                //    Join1Limits.text = $"Joint 1: {string.Join(", ", keyValuePair.Value)}";
+                //}
+                //else if (keyValuePair.Key == 1)
+                //{
+                //    Join2Limits.text = $"Joint 2: {string.Join(", ", keyValuePair.Value)}";
+                //}
+                //else if (keyValuePair.Key == 2)
+                //{
+                //    Join3Limits.text = $"Joint 3: {string.Join(", ", keyValuePair.Value)}";
+                //}
+                //else if (keyValuePair.Key == 3)
+                //{
+                //    Join4Limits.text = $"Joint 4: {string.Join(", ", keyValuePair.Value)}";
+                //}
             }
 
             _time -= _interval;

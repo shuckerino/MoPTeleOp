@@ -9,7 +9,7 @@ public class PhysicsSimulator : MonoBehaviour
 {
     public Transform[] jointTransforms; // Assign joints in Inspector
     public Collider[] colliderToCheck;
-    public float angleStep = 5.0f;        // Increment step for angles
+    public float angleStep = 2.0f;        // Increment step for angles
     public float physicsTimeStep = 0.2f; // Simulation time step
     float startingAngle = -180.0f;          // Starting angle for simulation
     float endingAngle = 180.0f;            // Ending angle for simulation
@@ -19,11 +19,10 @@ public class PhysicsSimulator : MonoBehaviour
         //Physics.simulationMode = SimulationMode.Script;
     }
 
-    public Dictionary<int, List<float>> SimulateJointAngles(float[] jointSigns, float[] jointValues, float[] jointOffsets)
+    public Dictionary<int, List<float>> SimulateJointAngles(float[] currentAngles)
     {
         Physics.simulationMode = SimulationMode.Script;
         int jointCount = jointTransforms.Length;
-        float[] currentAngles = new float[jointValues.Length];
         Dictionary<int, List<float>> collisionAngles = new Dictionary<int, List<float>>();
 
         // run simulation for each joint
@@ -31,33 +30,50 @@ public class PhysicsSimulator : MonoBehaviour
         {
             List<float> collisionAngleValues = new List<float>();
 
-            bool doneWithSimulation = false;
-            float angleToSimulate = startingAngle;
+            bool doneWithForwardSimulation = false;
+            bool doneWithBackwardSimulation = false;
+            float angleToSimulate = currentAngles[a];
             Quaternion initialJointRotation = jointTransforms[a].localRotation;
 
-            while (!doneWithSimulation)
+            // simulation in both directions -> first positive, then negative
+            while (!doneWithForwardSimulation || !doneWithBackwardSimulation)
             {
-                // adjust the simulated angle
-                if (angleToSimulate < endingAngle)
+                // forward simulation
+                if (!doneWithForwardSimulation)
                 {
-                    angleToSimulate += angleStep;
-                    // Determine axis of rotation based on joint index
-                    Vector3 rotationAxis = (a == 0 || a == 4) ? Vector3.up : Vector3.right;
-                    jointTransforms[a].localRotation = Quaternion.AngleAxis(angleToSimulate, rotationAxis);
+                    // adjust the simulated angle in positive direction
+                    if (angleToSimulate < endingAngle)
+                        angleToSimulate += angleStep;
+                    else
+                        doneWithForwardSimulation = true;
                 }
-                else
+                else // backward simulation
                 {
-                    doneWithSimulation = true;
+                    // adjust the simulated angle in negative direction
+                    if (angleToSimulate > startingAngle)
+                        angleToSimulate -= angleStep;
+                    else
+                        doneWithBackwardSimulation = true;
                 }
+
+                // Determine axis of rotation based on joint index
+                Vector3 rotationAxis = (a == 0 || a == 4) ? Vector3.up : Vector3.right;
+                jointTransforms[a].localRotation = Quaternion.AngleAxis(angleToSimulate, rotationAxis);
 
                 // Simulate physics
                 Physics.Simulate(physicsTimeStep);
                 //yield return new WaitForFixedUpdate();
 
                 // Check for collisions
-                if (CheckForCollision(colliderToCheck[a]))
+                if (a < colliderToCheck.Length && CheckForCollision(colliderToCheck[a]))
                 {
-                    collisionAngleValues.Add(angleToSimulate);
+                    collisionAngleValues.Add(Mathf.Abs(angleToSimulate - currentAngles[a]));
+
+                    // break forward simulation after first collision found
+                    if (!doneWithForwardSimulation)
+                        doneWithForwardSimulation = true;
+                    else
+                        doneWithBackwardSimulation = true;
                 }
             }
 
