@@ -65,9 +65,16 @@ public class UR10Controller : MonoBehaviour
             simulator = FindObjectOfType<PhysicsSimulator>();
             Dictionary<int, List<float>> collisionAngles =
             simulator.SimulateJointAngles(currentAngles);
-            foreach (var keyValuePair in collisionAngles)
+            for (int k = 0; k < jointValues.Length; k++)
             {
-                Debug.Log($"For angle {keyValuePair.Key} the collisions are {string.Join(", ", keyValuePair.Value)}");
+                if (collisionAngles.ContainsKey(k))
+                {
+                    Debug.Log($"Joint Limits for Joint_{k}: {string.Join(", ", collisionAngles[k])}");
+                }
+                else
+                {
+                    Debug.Log($"Joint Limits for Joint_{k}: Free");
+                }
 
                 //if (keyValuePair.Key == 0)
                 //{
