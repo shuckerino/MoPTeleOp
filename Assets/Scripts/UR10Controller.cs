@@ -5,6 +5,9 @@
 
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 
 public class UR10Controller : MonoBehaviour
 {
@@ -12,6 +15,7 @@ public class UR10Controller : MonoBehaviour
 
     //public PincherController pincherController;
     public GripperController gripperController;
+    private PhysicsSimulator simulator;
 
     public float[] jointValues = new float[7];
     private GameObject[] jointList = new GameObject[6];
@@ -19,47 +23,50 @@ public class UR10Controller : MonoBehaviour
     private float[] lowerLimit = { -180f, -180f, -180f, -180f, -180f, -180f };
     private float[] jointOffset = { 0f, 0f, 0f, 0f, 0f, 0f };
     private float[] jointSign = { 1f, 1f, -1f, 1f, -1f, 1f };
-    private bool useQuaternion = true;
+    float _interval = 2f;
+    float _time;
+
+    public TextMeshPro remainingJointAngleBase;
+    public TextMeshPro remainingJointAngleShoulder;
+    public TextMeshPro remainingJointAngleUpperArm;
+    public TextMeshPro remainingJointAngleForearm;
+
 
     // Use this for initialization
     void Start()
     {
         initializeJoints();
-
     }
 
     // Update is called once per frame
     void LateUpdate()
     {
         // joint values are in degrees
-        Debug.Log($"Update UR10 with {jointValues}!");
         for (int i = 0; i < 6; i++)
         {
-            if (useQuaternion)
+            float angleInDegrees = jointSign[i] * jointValues[i] + jointOffset[i];
+
+            // Determine axis of rotation based on joint index
+            Vector3 rotationAxis = (i == 0 || i == 4) ? Vector3.up : Vector3.right;
+
+            // Convert to quaternion
+            Quaternion targetRotation = Quaternion.AngleAxis(angleInDegrees, rotationAxis);
+
+            // Apply the rotation to the joint
+            jointList[i].transform.localRotation = targetRotation;
+        }
+        _time += Time.deltaTime;
+        while (_time >= _interval)
+        {
+            simulator = FindObjectOfType<PhysicsSimulator>();
+            Dictionary<int, List<float>> collisionAngles =
+            simulator.SimulateJointAngles(jointSign, jointValues, jointOffset);
+            foreach (var keyValuePair in collisionAngles)
             {
-                float angleInDegrees = jointSign[i] * jointValues[i] + jointOffset[i];
-
-                // Determine axis of rotation based on joint index
-                Vector3 rotationAxis = (i == 0 || i == 4) ? Vector3.up : Vector3.right;
-
-                // Convert to quaternion
-                Quaternion targetRotation = Quaternion.AngleAxis(angleInDegrees, rotationAxis);
-
-                // Apply the rotation to the joint
-                jointList[i].transform.localRotation = targetRotation;
+                Debug.Log($"For angle {keyValuePair.Key} the collisions are {string.Join(", ", keyValuePair.Value)}");
             }
-            else // use euler angles
-            {
-                Vector3 currentRotation = jointList[i].transform.localEulerAngles;
 
-                // Debug.Log(currentRotation);
-                if ((i == 0) | (i == 4))
-                    currentRotation.y = jointSign[i] * jointValues[i] + jointOffset[i];
-                else
-                    currentRotation.x = jointSign[i] * jointValues[i] + jointOffset[i];
-
-                jointList[i].transform.localEulerAngles = currentRotation; // * Mathf.PI/180.0f;
-            }
+            _time -= _interval;
         }
 
         //pincherController.grip = jointValues[6];
