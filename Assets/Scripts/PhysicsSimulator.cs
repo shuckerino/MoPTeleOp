@@ -38,24 +38,6 @@ public class PhysicsSimulator : MonoBehaviour
             // simulation in both directions -> first positive, then negative
             while (!doneWithForwardSimulation || !doneWithBackwardSimulation)
             {
-                // forward simulation
-                if (!doneWithForwardSimulation)
-                {
-                    // adjust the simulated angle in positive direction
-                    if (angleToSimulate < endingAngle)
-                        angleToSimulate += angleStep;
-                    else
-                        doneWithForwardSimulation = true;
-                }
-                else // backward simulation
-                {
-                    // adjust the simulated angle in negative direction
-                    if (angleToSimulate > startingAngle)
-                        angleToSimulate -= angleStep;
-                    else
-                        doneWithBackwardSimulation = true;
-                }
-
                 // Determine axis of rotation based on joint index
                 Vector3 rotationAxis = (a == 0 || a == 4) ? Vector3.up : Vector3.right;
                 jointTransforms[a].localRotation = Quaternion.AngleAxis(angleToSimulate, rotationAxis);
@@ -75,6 +57,25 @@ public class PhysicsSimulator : MonoBehaviour
                     else
                         doneWithBackwardSimulation = true;
                 }
+
+                // forward simulation
+                if (!doneWithForwardSimulation)
+                {
+                    // adjust the simulated angle in positive direction
+                    if (angleToSimulate < endingAngle)
+                        angleToSimulate += angleStep;
+                    else
+                        doneWithForwardSimulation = true;
+                }
+                else // backward simulation
+                {
+                    // adjust the simulated angle in negative direction
+                    if (angleToSimulate > startingAngle)
+                        angleToSimulate -= angleStep;
+                    else
+                        doneWithBackwardSimulation = true;
+                }
+
             }
 
             jointTransforms[a].localRotation = initialJointRotation;
