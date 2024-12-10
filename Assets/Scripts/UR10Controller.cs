@@ -69,7 +69,7 @@ public class UR10Controller : MonoBehaviour
             {
                 if (collisionAngles.ContainsKey(k))
                 {
-                    Debug.Log($"Joint Limits for Joint_{k}: {string.Join(", ", collisionAngles[k])}");
+                    Debug.Log($"Joint Limits for Joint_{k}: pos_{collisionAngles[k][0]},  neg_{collisionAngles[k][1]}");
                 }
                 else
                 {
