@@ -48,7 +48,8 @@ public class PhysicsSimulator : MonoBehaviour
                 //yield return new WaitForFixedUpdate();
 
                 // Check for collisions
-                if (a < colliderToCheck.Length && CheckForCollision(colliderToCheck[a]))
+                //if (a < colliderToCheck.Length && CheckForCollision(colliderToCheck[a]))
+                if (a < colliderToCheck.Length && CheckForCollision())
                 {
                     collisionAngleValues.Add(Mathf.Abs(angleToSimulate - currentAngles[a]));
 
@@ -115,21 +116,24 @@ public class PhysicsSimulator : MonoBehaviour
     //}
 
 
-    private bool CheckForCollision(Collider currentCollider)
+    private bool CheckForCollision()
     {
-        foreach (var colliderA in colliderToCheck)
+        foreach (var currentCollider in colliderToCheck)
         {
-            if (colliderA != currentCollider)
+            foreach (var colliderA in colliderToCheck)
             {
-                Vector3 direction;
-                float distance;
-
-                if (Physics.ComputePenetration(
-                    colliderA, colliderA.transform.position, colliderA.transform.rotation,
-                    currentCollider, currentCollider.transform.position, currentCollider.transform.rotation,
-                    out direction, out distance))
+                if (colliderA != currentCollider)
                 {
-                    return true; // Collision detected
+                    Vector3 direction;
+                    float distance;
+
+                    if (Physics.ComputePenetration(
+                        colliderA, colliderA.transform.position, colliderA.transform.rotation,
+                        currentCollider, currentCollider.transform.position, currentCollider.transform.rotation,
+                        out direction, out distance))
+                    {
+                        return true; // Collision detected
+                    }
                 }
             }
         }

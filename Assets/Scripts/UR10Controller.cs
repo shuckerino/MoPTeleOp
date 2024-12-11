@@ -17,7 +17,7 @@ public class UR10Controller : MonoBehaviour
     public GripperController gripperController;
     private PhysicsSimulator simulator;
 
-    public float[] jointValues = new float[7];
+    public float[] jointValues = new float[6];
     private GameObject[] jointList = new GameObject[6];
     private float[] upperLimit = { 180f, 180f, 180f, 180f, 180f, 180f };
     private float[] lowerLimit = { -180f, -180f, -180f, -180f, -180f, -180f };
@@ -64,9 +64,21 @@ public class UR10Controller : MonoBehaviour
             simulator.SimulateJointAngles(currentAngles);
             for (int k = 0; k < jointValues.Length; k++)
             {
+                int posIndex, negIndex;
+                if (k < 6 && jointSign[k] == -1f)
+                {
+                    posIndex = 1;
+                    negIndex = 0;
+                }
+                else
+                {
+                    posIndex = 0;
+                    negIndex = 1;
+                }
+
                 if (collisionAngles.ContainsKey(k))
                 {
-                    Debug.Log($"Joint Limits for Joint_{k}: pos_{collisionAngles[k][0]},  neg_{collisionAngles[k][1]}");
+                    Debug.Log($"Joint Limits for Joint_{k}: pos_{collisionAngles[k][posIndex]},  neg_{collisionAngles[k][negIndex]}");
                 }
                 else
                 {
@@ -75,25 +87,25 @@ public class UR10Controller : MonoBehaviour
 
                 if (k == 0)
                 {
-                    Joint0Limits.text = $"Joint 0: +{collisionAngles[k][0]}, -{collisionAngles[k][1]}";
+                    Joint0Limits.text = $"Joint 0: +{collisionAngles[k][posIndex]}, -{collisionAngles[k][negIndex]}";
                 }
                 else if (k == 1)
                 {
-                    Joint1Limits.text = $"Joint 1: +{collisionAngles[k][0]}, -{collisionAngles[k][1]}";
+                    Joint1Limits.text = $"Joint 1: +{collisionAngles[k][posIndex]}, -{collisionAngles[k][negIndex]}";
 
                 }
                 else if (k == 2)
                 {
-                    Joint2Limits.text = $"Joint 2: +{collisionAngles[k][0]}, -{collisionAngles[k][1]}";
+                    Joint2Limits.text = $"Joint 2: +{collisionAngles[k][posIndex]}, -{collisionAngles[k][negIndex]}";
 
                 }
                 else if (k == 3)
                 {
-                    Joint3Limits.text = $"Joint 3: +{collisionAngles[k][0]}, -{collisionAngles[k][1]}";
+                    Joint3Limits.text = $"Joint 3: +{collisionAngles[k][posIndex]}, -{collisionAngles[k][negIndex]}";
                 }
                 else if (k == 4)
                 {
-                    Joint4Limits.text = $"Joint 4: +{collisionAngles[k][0]}, -{collisionAngles[k][1]}";
+                    Joint4Limits.text = $"Joint 4: +{collisionAngles[k][posIndex]}, -{collisionAngles[k][negIndex]}";
                 }
             }
 

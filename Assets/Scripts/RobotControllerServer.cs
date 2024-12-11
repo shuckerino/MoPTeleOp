@@ -57,7 +57,9 @@ public class RobotControllerServer : MonoBehaviour
 		tcpListenerThread = new Thread(new ThreadStart(ListenForIncommingRequests));
 		tcpListenerThread.IsBackground = true;
 		tcpListenerThread.Start();
-	}
+		SimulationConnector simulationConnector = new SimulationConnector();
+		simulationConnector.StartSimulationServer();
+    }
 
 	// Update is called once per frame
 	void Update()
