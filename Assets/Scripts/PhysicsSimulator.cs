@@ -21,7 +21,8 @@ public class PhysicsSimulator : MonoBehaviour
 
     public Dictionary<int, List<float>> SimulateJointAngles(float[] currentAngles)
     {
-        Physics.simulationMode = SimulationMode.Script;
+        //Physics.simulationMode = SimulationMode.Script;
+        Physics.autoSimulation = false;
         int jointCount = jointTransforms.Length;
         Dictionary<int, List<float>> collisionAngles = new Dictionary<int, List<float>>();
 
@@ -82,6 +83,12 @@ public class PhysicsSimulator : MonoBehaviour
 
             if (collisionAngleValues.Count > 0)
                 collisionAngles.Add(a, collisionAngleValues);
+            else
+            {
+                List<float> list = new List<float> { 180.0f, 180.0f };
+                collisionAngles.Add(a, list);
+
+            }
         }
 
         return collisionAngles;

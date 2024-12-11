@@ -26,14 +26,11 @@ public class UR10Controller : MonoBehaviour
     float _interval = 0.5f;
     float _time;
 
-    [SerializeField]
-    private TextMeshProUGUI Join1Limits;
-    [SerializeField]
-    private TextMeshProUGUI Join2Limits;
-    [SerializeField]
-    private TextMeshProUGUI Join3Limits;
-    [SerializeField]
-    private TextMeshProUGUI Join4Limits;
+    public TMP_Text Joint0Limits;
+    public TMP_Text Joint1Limits;
+    public TMP_Text Joint2Limits;
+    public TMP_Text Joint3Limits;
+    public TMP_Text Joint4Limits;
 
     // Use this for initialization
     void Start()
@@ -76,22 +73,28 @@ public class UR10Controller : MonoBehaviour
                     Debug.Log($"Joint Limits for Joint_{k}: Free");
                 }
 
-                //if (keyValuePair.Key == 0)
-                //{
-                //    Join1Limits.text = $"Joint 1: {string.Join(", ", keyValuePair.Value)}";
-                //}
-                //else if (keyValuePair.Key == 1)
-                //{
-                //    Join2Limits.text = $"Joint 2: {string.Join(", ", keyValuePair.Value)}";
-                //}
-                //else if (keyValuePair.Key == 2)
-                //{
-                //    Join3Limits.text = $"Joint 3: {string.Join(", ", keyValuePair.Value)}";
-                //}
-                //else if (keyValuePair.Key == 3)
-                //{
-                //    Join4Limits.text = $"Joint 4: {string.Join(", ", keyValuePair.Value)}";
-                //}
+                if (k == 0)
+                {
+                    Joint0Limits.text = $"Joint 0: +{collisionAngles[k][0]}, -{collisionAngles[k][1]}";
+                }
+                else if (k == 1)
+                {
+                    Joint1Limits.text = $"Joint 1: +{collisionAngles[k][0]}, -{collisionAngles[k][1]}";
+
+                }
+                else if (k == 2)
+                {
+                    Joint2Limits.text = $"Joint 2: +{collisionAngles[k][0]}, -{collisionAngles[k][1]}";
+
+                }
+                else if (k == 3)
+                {
+                    Joint3Limits.text = $"Joint 3: +{collisionAngles[k][0]}, -{collisionAngles[k][1]}";
+                }
+                else if (k == 4)
+                {
+                    Joint4Limits.text = $"Joint 4: +{collisionAngles[k][0]}, -{collisionAngles[k][1]}";
+                }
             }
 
             _time -= _interval;
