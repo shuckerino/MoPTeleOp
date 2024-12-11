@@ -63,7 +63,7 @@ public class PhysicsSimulator : MonoBehaviour
                 if (!doneWithForwardSimulation)
                 {
                     // adjust the simulated angle in positive direction
-                    if (angleToSimulate < endingAngle)
+                    if (angleToSimulate <= endingAngle)
                         angleToSimulate += angleStep;
                     else
                         doneWithForwardSimulation = true;
@@ -71,7 +71,7 @@ public class PhysicsSimulator : MonoBehaviour
                 else // backward simulation
                 {
                     // adjust the simulated angle in negative direction
-                    if (angleToSimulate > startingAngle)
+                    if (angleToSimulate >= startingAngle)
                         angleToSimulate -= angleStep;
                     else
                         doneWithBackwardSimulation = true;
@@ -81,8 +81,13 @@ public class PhysicsSimulator : MonoBehaviour
 
             jointTransforms[a].localRotation = initialJointRotation;
 
-            if (collisionAngleValues.Count > 0)
+            if (collisionAngleValues.Count == 2)
                 collisionAngles.Add(a, collisionAngleValues);
+            else if (collisionAngleValues.Count == 1)
+            {
+                collisionAngleValues.Add(0.0f);
+                collisionAngles.Add(a, collisionAngleValues);
+            }
             else
             {
                 List<float> list = new List<float> { 180.0f, 180.0f };

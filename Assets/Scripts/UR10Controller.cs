@@ -139,22 +139,27 @@ public class UR10Controller : MonoBehaviour
             if (RobotChildren[i].name == "Joint_1")
             {
                 jointList[0] = RobotChildren[i].gameObject;
+                Joint0Limits.text = $"Joint 0: +{180.0f}, -{-180.0f}";
             }
             else if (RobotChildren[i].name == "Joint_2")
             {
                 jointList[1] = RobotChildren[i].gameObject;
+                Joint1Limits.text = $"Joint 1: +{180.0f}, -{-180.0f}";
             }
             else if (RobotChildren[i].name == "Joint_3")
             {
                 jointList[2] = RobotChildren[i].gameObject;
+                Joint2Limits.text = $"Joint 2: +{180.0f}, -{-180.0f}";
             }
             else if (RobotChildren[i].name == "Joint_4")
             {
                 jointList[3] = RobotChildren[i].gameObject;
+                Joint3Limits.text = $"Joint 3: +{180.0f}, -{-180.0f}";
             }
             else if (RobotChildren[i].name == "Joint_5")
             {
                 jointList[4] = RobotChildren[i].gameObject;
+                Joint4Limits.text = $"Joint 4: +{180.0f}, -{-180.0f}";
             }
             else if (RobotChildren[i].name == "Joint_6")
             {

@@ -2347,8 +2347,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.09390713, y: 0.21014635, z: 0.07041335}
-  m_Center: {x: -0.08086274, y: 0.6594827, z: 0.3394054}
+  m_Size: {x: 0.09390713, y: 0.11164732, z: 0.07041335}
+  m_Center: {x: -0.08086274, y: 0.6102331, z: 0.3394054}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -3167,6 +3167,51 @@ Transform:
   m_Father: {fileID: 586525930}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &952750802
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 952750803}
+  - component: {fileID: 952750804}
+  m_Layer: 0
+  m_Name: unnamed
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &952750803
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 952750802}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.1924, y: -0.0032, z: -0.25}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1681642068}
+  m_Father: {fileID: 1880661074}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &952750804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 952750802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c0c8ba1123c5f949b20e50d5dd6afe4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  geometryType: 0
 --- !u!1 &953553794 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2320511564348233665, guid: 7e4001b3208aa1d48974ce3f1e1e032c, type: 3}
@@ -4910,6 +4955,50 @@ Transform:
   m_Father: {fileID: 237439302}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1681642067
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1681642068}
+  - component: {fileID: 1681642069}
+  m_Layer: 0
+  m_Name: Joint5_AABB
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1681642068
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681642067}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.00000023841855}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 952750803}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1681642069
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681642067}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.32166758, y: 0.04951424, z: 0.09730673}
+  m_Center: {x: -0.3170596, y: 0.11985186, z: 0.24326}
 --- !u!1 &1703032097
 GameObject:
   m_ObjectHideFlags: 0
@@ -5246,6 +5335,11 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.4449089, y: 0.5593988, z: 0.7456657}
   m_Center: {x: -0.09310867, y: 0.017349359, z: 0.05617072}
+--- !u!4 &1880661074 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 9175503166582559056, guid: 7e4001b3208aa1d48974ce3f1e1e032c, type: 3}
+  m_PrefabInstance: {fileID: 5676149770370025759}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1892863004
 GameObject:
   m_ObjectHideFlags: 0
@@ -5972,6 +6066,7 @@ MonoBehaviour:
   - {fileID: 1859087457}
   - {fileID: 532562203}
   - {fileID: 703646036}
+  - {fileID: 1681642069}
   - {fileID: 35220305}
   - {fileID: 654978930}
   angleStep: 2
