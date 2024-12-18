@@ -14,11 +14,11 @@ public class SimulationConnector : MonoBehaviour
     /// TCPListener to listen for incomming TCP connection 	
     /// requests. 	
     /// </summary> 	
-    private TcpListener tcpListener;
+    private TcpListener server;
     /// <summary> 
     /// Background thread for TcpServer workload. 	
     /// </summary> 	
-    private Thread tcpListenerThread;
+    private Thread serverThread;
     /// <summary> 	
     /// Create handle to connected tcp client. 	
     /// </summary> 	
@@ -27,12 +27,16 @@ public class SimulationConnector : MonoBehaviour
     private const string MESSAGE_SEPARATOR = "$;$";
     public int connectionPort = 11002;
     private PhysicsSimulator physicsSimulator;
+    private UR10Controller ur10Controller;
 
     public void StartSimulationServer()
     {
-        tcpListenerThread = new Thread(new ThreadStart(ListenForIncommingRequests));
-        tcpListenerThread.IsBackground = true;
-        tcpListenerThread.Start();
+        physicsSimulator = FindObjectOfType<PhysicsSimulator>();
+        ur10Controller = FindObjectOfType<UR10Controller>();
+
+        serverThread = new Thread(new ThreadStart(ListenForIncommingRequests));
+        serverThread.IsBackground = true;
+        serverThread.Start();
     }
 
     /// <summary> 	
@@ -43,13 +47,13 @@ public class SimulationConnector : MonoBehaviour
         try
         {
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture; // set default culture
-            tcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), connectionPort);
-            tcpListener.Start();
+            server = new TcpListener(IPAddress.Parse("127.0.0.1"), connectionPort);
+            server.Start();
             Debug.Log("Simulation is listening");
             Byte[] bytes = new Byte[1024];
             while (true)
             {
-                using (connectedTcpClient = tcpListener.AcceptTcpClient())
+                using (connectedTcpClient = server.AcceptTcpClient())
                 {
                     // Get a stream object for reading 					
                     using (NetworkStream stream = connectedTcpClient.GetStream())
@@ -67,8 +71,8 @@ public class SimulationConnector : MonoBehaviour
 
                             for (int i = 0; i < messages.Length; i++)
                             {
-                                string reply = HandleClientMessage(messages[i]);
-                                SendServerMessage(reply);
+                                string jointLimits = SynchronizeReceivedDataWithSimulation(messages[i]);
+                                SendJointLimits(jointLimits);
                             }
                         }
                     }
@@ -82,32 +86,32 @@ public class SimulationConnector : MonoBehaviour
     }
 
 
-    private string HandleClientMessage(string message)
+    /// <summary>
+    /// Running the simulation with the received data
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns>Message that contains all joint limits</returns>
+    private string SynchronizeReceivedDataWithSimulation(string message)
     {
-        physicsSimulator = FindObjectOfType<PhysicsSimulator>();
-
         // take received joint values
         string[] jointValues = message.Split(',');
         float[] convertedJointValues = new float[jointValues.Length];
-        for (int i = 0; i < jointValues.Length; i++)
+        ur10Controller.UpdateJointValues(jointValues.Select(float.Parse).ToArray());
+
+        List<string> messages = new List<string>();
+
+        try
         {
-            if (float.TryParse(jointValues[i], out float res))
+            foreach (var keyValuePair in physicsSimulator.GetLastSimulationResult())
             {
-                convertedJointValues[i] = res;
+                messages.Add(string.Join(",", keyValuePair.Value));
             }
-            else
-            {
-                Debug.Log($"Error while converting joint angle {jointValues[i]}");
-            }
+        }
+        catch (Exception)
+        {
+            Debug.LogWarning("Collection was modified exception!");
         }
 
-        // run simulation
-        Dictionary<int, List<float>> collisionAngles = physicsSimulator.SimulateJointAngles(convertedJointValues);
-        List<string> messages = new List<string>();
-        foreach (var keyValuePair in collisionAngles)
-        {
-            messages.Add(string.Join(",", keyValuePair.Value));
-        }
 
         // send result back
         string resultMessage = string.Join(MESSAGE_SEPARATOR, messages.ToArray());
@@ -118,7 +122,7 @@ public class SimulationConnector : MonoBehaviour
     /// <summary> 	
 	/// Send message to client using socket connection. 	
 	/// </summary> 	
-	private void SendServerMessage(string message)
+	private void SendJointLimits(string message)
     {
         if (connectedTcpClient == null)
         {
@@ -143,5 +147,11 @@ public class SimulationConnector : MonoBehaviour
         {
             Debug.Log("Socket exception: " + socketException);
         }
+    }
+
+    void OnDestroy()
+    {
+        server?.Stop();
+        serverThread?.Abort();
     }
 }
