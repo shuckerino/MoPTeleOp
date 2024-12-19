@@ -23,7 +23,7 @@ public class UR10Controller : MonoBehaviour
     private float[] lowerLimit = { -180f, -180f, -180f, -180f, -180f, -180f };
     private float[] jointOffset = { 90f, 90f, 0f, 90f, 0f, 0f };
     private float[] jointSign = { -1f, 1f, 1f, 1f, -1f, 1f };
-    float _interval = 0.5f;
+    float _interval = 0.25f;
     float _time;
 
     public TMP_Text Joint0Limits;
@@ -44,6 +44,7 @@ public class UR10Controller : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        simulator = FindObjectOfType<PhysicsSimulator>();
         initializeJoints();
     }
 
@@ -68,7 +69,6 @@ public class UR10Controller : MonoBehaviour
         _time += Time.deltaTime;
         while (_time >= _interval)
         {
-            simulator = FindObjectOfType<PhysicsSimulator>();
             simulator.SimulateJointAngles(currentAngles);
             Dictionary<int, List<float>> collisionAngles = simulator.GetLastSimulationResult();
             for (int k = 0; k < jointValues.Length; k++)

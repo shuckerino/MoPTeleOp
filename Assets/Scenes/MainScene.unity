@@ -7304,6 +7304,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: UR10
       objectReference: {fileID: 0}
+    - target: {fileID: 6196072772684364527, guid: 7e4001b3208aa1d48974ce3f1e1e032c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6196072772684364527, guid: 7e4001b3208aa1d48974ce3f1e1e032c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6196072772684364527, guid: 7e4001b3208aa1d48974ce3f1e1e032c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6302969310021094372, guid: 7e4001b3208aa1d48974ce3f1e1e032c, type: 3}
       propertyPath: m_Enabled
       value: 0
