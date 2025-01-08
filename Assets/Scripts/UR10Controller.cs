@@ -37,7 +37,10 @@ public class UR10Controller : MonoBehaviour
     {
         lock (jointValues)
         {
-            jointValues = newJointValues;
+            for (int i = 0; i < newJointValues.Length; i++)
+            {
+                jointValues[i] = newJointValues[i];
+            }
         }
     }
 

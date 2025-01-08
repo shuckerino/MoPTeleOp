@@ -2911,9 +2911,9 @@ MonoBehaviour:
   gripperController: {fileID: 0}
   jointValues:
   - 0
+  - -90
   - 0
-  - 0
-  - 0
+  - -90
   - 0
   - 0
   - 0
