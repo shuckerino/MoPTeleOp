@@ -58,7 +58,7 @@ public class RobotControllerServer : MonoBehaviour
 		tcpListenerThread.IsBackground = true;
 		tcpListenerThread.Start();
 		SimulationConnector simulationConnector = new SimulationConnector();
-		simulationConnector.StartSimulationServer();
+		simulationConnector.ConnectToPythonServer();
     }
 
 	// Update is called once per frame
@@ -97,7 +97,7 @@ public class RobotControllerServer : MonoBehaviour
 					// Get joint portion of message
 					float[] jointValues = values.GetRange(0, 7).ToArray();
 					//ur5Controller.jointValues = jointValues;
-					ur10Controller.jointValues = jointValues;
+					ur10Controller.jointValuesInDegrees = jointValues;
 
 					// Get brick portion of message
 					Vector3 brickPos = new Vector3(values[7], values[8], values[9]);

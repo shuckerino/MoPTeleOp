@@ -17,12 +17,12 @@ public class UR10Controller : MonoBehaviour
     public GripperController gripperController;
     private PhysicsSimulator simulator;
 
-    public float[] jointValues = new float[6];
+    public float[] jointValuesInDegrees = new float[6];
     private GameObject[] jointList = new GameObject[6];
     private float[] upperLimit = { 180f, 180f, 180f, 180f, 180f, 180f };
     private float[] lowerLimit = { -180f, -180f, -180f, -180f, -180f, -180f };
-    private float[] jointOffset = { 90f, 90f, 0f, 90f, 0f, 0f };
     private float[] jointSign = { -1f, 1f, 1f, 1f, -1f, 1f };
+
     float _interval = 0.25f;
     float _time;
 
@@ -35,11 +35,12 @@ public class UR10Controller : MonoBehaviour
 
     public void UpdateJointValues(float[] newJointValues)
     {
-        lock (jointValues)
+        lock (jointValuesInDegrees)
         {
+            //jointValuesInDegrees = newJointValues;
             for (int i = 0; i < newJointValues.Length; i++)
             {
-                jointValues[i] = newJointValues[i];
+                jointValuesInDegrees[i] = newJointValues[i];
             }
         }
     }
@@ -58,7 +59,7 @@ public class UR10Controller : MonoBehaviour
         // joint values are in degrees
         for (int i = 0; i < 6; i++)
         {
-            float angleInDegrees = jointSign[i] * jointValues[i] + jointOffset[i];
+            float angleInDegrees = jointValuesInDegrees[i];
             currentAngles[i] = angleInDegrees;
             // Determine axis of rotation based on joint index
             Vector3 rotationAxis = (i == 0 || i == 4) ? Vector3.up : Vector3.right;
@@ -74,7 +75,7 @@ public class UR10Controller : MonoBehaviour
         {
             simulator.SimulateJointAngles(currentAngles);
             Dictionary<int, List<float>> collisionAngles = simulator.GetLastSimulationResult();
-            for (int k = 0; k < jointValues.Length; k++)
+            for (int k = 0; k < jointValuesInDegrees.Length; k++)
             {
                 int posIndex, negIndex;
                 if (k < 6 && jointSign[k] == -1f)
@@ -143,13 +144,13 @@ public class UR10Controller : MonoBehaviour
         for (int i = 0; i < 6; i++)
         {
             GUI.Label(new Rect(boundary, boundary + (i * 2 + 1) * labelHeight, labelHeight * 4, labelHeight), "Joint " + i + ": ");
-            jointValues[i] = GUI.HorizontalSlider(new Rect(boundary + labelHeight * 4, boundary + (i * 2 + 1) * labelHeight + labelHeight / 4, labelHeight * 5, labelHeight), jointValues[i], lowerLimit[i], upperLimit[i]);
-            GUI.Label(new Rect(boundary + labelHeight * 4, boundary + (i * 2 + 2) * labelHeight, labelHeight * 5, labelHeight), $"{jointValues[i]:F1}°"); // Display angle to 1 decimal place
+            jointValuesInDegrees[i] = GUI.HorizontalSlider(new Rect(boundary + labelHeight * 4, boundary + (i * 2 + 1) * labelHeight + labelHeight / 4, labelHeight * 5, labelHeight), jointValuesInDegrees[i], lowerLimit[i], upperLimit[i]);
+            GUI.Label(new Rect(boundary + labelHeight * 4, boundary + (i * 2 + 2) * labelHeight, labelHeight * 5, labelHeight), $"{jointValuesInDegrees[i]:F1}°"); // Display angle to 1 decimal place
         }
 
         // Gripper value
         GUI.Label(new Rect(boundary, boundary + (6 * 2 + 1) * labelHeight, labelHeight * 4, labelHeight), "Gripper: ");
-        jointValues[6] = GUI.HorizontalSlider(new Rect(boundary + labelHeight * 4, boundary + (6 * 2 + 1) * labelHeight + labelHeight / 4, labelHeight * 5, labelHeight), jointValues[6], 0, 1);
+        jointValuesInDegrees[6] = GUI.HorizontalSlider(new Rect(boundary + labelHeight * 4, boundary + (6 * 2 + 1) * labelHeight + labelHeight / 4, labelHeight * 5, labelHeight), jointValuesInDegrees[6], 0, 1);
     }
 
 
