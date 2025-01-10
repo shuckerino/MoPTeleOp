@@ -11,9 +11,10 @@ using TMPro;
 
 public class UR10Controller : MonoBehaviour
 {
+    #region Member
+
     public GameObject RobotBase;
 
-    //public PincherController pincherController;
     public GripperController gripperController;
     private PhysicsSimulator simulator;
 
@@ -32,49 +33,66 @@ public class UR10Controller : MonoBehaviour
     public TMP_Text Joint3Limits;
     public TMP_Text Joint4Limits;
 
+    #endregion
 
-    public void UpdateJointValues(float[] newJointValues)
+    #region Init
+
+    void Start()
     {
-        lock (jointValuesInDegrees)
+        simulator = FindObjectOfType<PhysicsSimulator>();
+        InitializeJoints();
+        PythonServerConnector simulationConnector = new PythonServerConnector();
+        simulationConnector.ConnectToPythonServer();
+    }
+
+    /// <summary>
+    /// Create the list of GameObjects that represent each joint of the robot
+    /// </summary>
+    void InitializeJoints()
+    {
+        var RobotChildren = RobotBase.GetComponentsInChildren<Transform>();
+        for (int i = 0; i < RobotChildren.Length; i++)
         {
-            //jointValuesInDegrees = newJointValues;
-            for (int i = 0; i < newJointValues.Length; i++)
+            if (RobotChildren[i].name == "Joint_1")
             {
-                jointValuesInDegrees[i] = newJointValues[i];
+                jointList[0] = RobotChildren[i].gameObject;
+                Joint0Limits.text = $"Joint 0: +{180.0f}, -{-180.0f}";
+            }
+            else if (RobotChildren[i].name == "Joint_2")
+            {
+                jointList[1] = RobotChildren[i].gameObject;
+                Joint1Limits.text = $"Joint 1: +{180.0f}, -{-180.0f}";
+            }
+            else if (RobotChildren[i].name == "Joint_3")
+            {
+                jointList[2] = RobotChildren[i].gameObject;
+                Joint2Limits.text = $"Joint 2: +{180.0f}, -{-180.0f}";
+            }
+            else if (RobotChildren[i].name == "Joint_4")
+            {
+                jointList[3] = RobotChildren[i].gameObject;
+                Joint3Limits.text = $"Joint 3: +{180.0f}, -{-180.0f}";
+            }
+            else if (RobotChildren[i].name == "Joint_5")
+            {
+                jointList[4] = RobotChildren[i].gameObject;
+                Joint4Limits.text = $"Joint 4: +{180.0f}, -{-180.0f}";
+            }
+            else if (RobotChildren[i].name == "Joint_6")
+            {
+                jointList[5] = RobotChildren[i].gameObject;
             }
         }
     }
 
-    // Use this for initialization
-    void Start()
+    #endregion
+
+    #region Update
+
+    #region UI
+    private void UpdateUIData(Dictionary<int, List<float>> collisionAngles)
     {
-        simulator = FindObjectOfType<PhysicsSimulator>();
-        initializeJoints();
-    }
 
-    // Update is called once per frame
-    void LateUpdate()
-    {
-        float[] currentAngles = new float[6];
-        // joint values are in degrees
-        for (int i = 0; i < 6; i++)
-        {
-            float angleInDegrees = jointValuesInDegrees[i];
-            currentAngles[i] = angleInDegrees;
-            // Determine axis of rotation based on joint index
-            Vector3 rotationAxis = (i == 0 || i == 4) ? Vector3.up : Vector3.right;
-
-            // Convert to quaternion
-            Quaternion targetRotation = Quaternion.AngleAxis(angleInDegrees, rotationAxis);
-
-            // Apply the rotation to the joint
-            jointList[i].transform.localRotation = targetRotation;
-        }
-        //_time += Time.deltaTime;
-        //while (_time >= _interval)
-        //{
-        simulator.SimulateJointAngles(currentAngles);
-        Dictionary<int, List<float>> collisionAngles = simulator.GetLastSimulationResult();
         for (int k = 0; k < jointValuesInDegrees.Length; k++)
         {
             int posIndex, negIndex;
@@ -122,11 +140,6 @@ public class UR10Controller : MonoBehaviour
             }
         }
 
-        //    _time -= _interval;
-        //}
-
-        //pincherController.grip = jointValues[6];
-        //gripperController.gripRatio = jointValues[6];
     }
 
     void OnGUI()
@@ -154,41 +167,47 @@ public class UR10Controller : MonoBehaviour
     }
 
 
-    // Create the list of GameObjects that represent each joint of the robot
-    void initializeJoints()
+    #endregion
+
+    void LateUpdate()
     {
-        var RobotChildren = RobotBase.GetComponentsInChildren<Transform>();
-        for (int i = 0; i < RobotChildren.Length; i++)
+        float[] currentAngles = new float[6];
+        for (int i = 0; i < 6; i++)
         {
-            if (RobotChildren[i].name == "Joint_1")
+            float angleInDegrees = jointValuesInDegrees[i];
+            currentAngles[i] = angleInDegrees;
+
+            // Determine axis of rotation based on joint index
+            Vector3 rotationAxis = (i == 0 || i == 4) ? Vector3.up : Vector3.right;
+
+            // Convert to quaternion
+            Quaternion targetRotation = Quaternion.AngleAxis(angleInDegrees, rotationAxis);
+
+            // Apply the rotation to the joint
+            jointList[i].transform.localRotation = targetRotation;
+        }
+        //_time += Time.deltaTime;
+        //while (_time >= _interval)
+        //{
+        simulator.SimulateJointAngles(currentAngles);
+        UpdateUIData(simulator.GetLastSimulationResult());
+
+        //    _time -= _interval;
+        //}
+    }
+
+    public void UpdateJointValues(float[] newJointValues)
+    {
+        lock (jointValuesInDegrees)
+        {
+            //jointValuesInDegrees = newJointValues;
+            for (int i = 0; i < newJointValues.Length; i++)
             {
-                jointList[0] = RobotChildren[i].gameObject;
-                Joint0Limits.text = $"Joint 0: +{180.0f}, -{-180.0f}";
-            }
-            else if (RobotChildren[i].name == "Joint_2")
-            {
-                jointList[1] = RobotChildren[i].gameObject;
-                Joint1Limits.text = $"Joint 1: +{180.0f}, -{-180.0f}";
-            }
-            else if (RobotChildren[i].name == "Joint_3")
-            {
-                jointList[2] = RobotChildren[i].gameObject;
-                Joint2Limits.text = $"Joint 2: +{180.0f}, -{-180.0f}";
-            }
-            else if (RobotChildren[i].name == "Joint_4")
-            {
-                jointList[3] = RobotChildren[i].gameObject;
-                Joint3Limits.text = $"Joint 3: +{180.0f}, -{-180.0f}";
-            }
-            else if (RobotChildren[i].name == "Joint_5")
-            {
-                jointList[4] = RobotChildren[i].gameObject;
-                Joint4Limits.text = $"Joint 4: +{180.0f}, -{-180.0f}";
-            }
-            else if (RobotChildren[i].name == "Joint_6")
-            {
-                jointList[5] = RobotChildren[i].gameObject;
+                jointValuesInDegrees[i] = newJointValues[i];
             }
         }
     }
+
+    #endregion
+
 }

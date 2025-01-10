@@ -8,6 +8,8 @@ using UnityEngine;
 
 public class PhysicsSimulator : MonoBehaviour
 {
+    #region Member
+
     public Transform[] jointTransforms; // Assign joints in Inspector
     public Collider[] colliderToCheck;
     public float angleStep = 2.0f;        // Increment step for angles
@@ -15,18 +17,23 @@ public class PhysicsSimulator : MonoBehaviour
     float startingAngle = -180.0f;          // Starting angle for simulation
     float endingAngle = 180.0f;            // Ending angle for simulation
 
-    bool newResultAvailable = false;
     ConcurrentDictionary<int, List<float>> collisionAngles = new ConcurrentDictionary<int, List<float>>();
     Dictionary<int, List<float>> lastResult = new Dictionary<int, List<float>>();
+
+    #endregion
+
+    #region Init
 
     void Start()
     {
         Physics.autoSimulation = false;
     }
+    #endregion
+
+    #region Physics Simulation
 
     public void SimulateJointAngles(float[] currentAngles)
     {
-        newResultAvailable = false;
         int jointCount = jointTransforms.Length;
         collisionAngles.Clear();
         // run simulation for each joint
@@ -103,7 +110,6 @@ public class PhysicsSimulator : MonoBehaviour
         {
             lastResult = new Dictionary<int, List<float>>(collisionAngles);
         }
-        newResultAvailable = true;
     }
 
     private bool CheckForCollision()
@@ -142,12 +148,8 @@ public class PhysicsSimulator : MonoBehaviour
 
         return result;
     }
-
-    public bool IsNewResultAvailable()
-    {
-        return newResultAvailable;
-    }
-
+    
+    #endregion
 }
 
 

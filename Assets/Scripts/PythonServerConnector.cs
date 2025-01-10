@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 
 public class PythonServerConnector : MonoBehaviour
 {
+    #region Member
+
     private TcpClient tcpClient;
     private NetworkStream networkStream;
     private StreamReader reader;
@@ -27,6 +29,10 @@ public class PythonServerConnector : MonoBehaviour
     private const string MESSAGE_SEPARATOR = "$;$";
     private PhysicsSimulator physicsSimulator;
     private UR10Controller ur10Controller;
+
+    #endregion
+
+    #region Connect
 
     public void ConnectToPythonServer()
     {
@@ -53,6 +59,10 @@ public class PythonServerConnector : MonoBehaviour
         }
 
     }
+
+    #endregion
+
+    #region Receive
 
     void ReceiveMessagesFromPythonServer()
     {
@@ -88,6 +98,10 @@ public class PythonServerConnector : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Run simulation
+
     /// <summary>
     /// Running the simulation with the received data
     /// </summary>
@@ -122,10 +136,14 @@ public class PythonServerConnector : MonoBehaviour
         return resultMessage;
     }
 
+    #endregion
+
+    #region Send
+
     /// <summary> 	
-	/// Send message to client using socket connection. 	
-	/// </summary> 	
-	private void SendJointLimits(string message)
+    /// Send message to client using socket connection. 	
+    /// </summary> 	
+    private void SendJointLimits(string message)
     {
         if (tcpClient == null)
         {
@@ -167,7 +185,11 @@ public class PythonServerConnector : MonoBehaviour
         }
     }
 
-    void OnDestroy()
+    #endregion
+
+    #region Disconnect
+
+    void OnApplicationQuit()
     {
         if (tcpClient != null && tcpClient.Connected)
         {
@@ -179,4 +201,7 @@ public class PythonServerConnector : MonoBehaviour
 
         receiveThread?.Abort();
     }
+
+    #endregion
+
 }
