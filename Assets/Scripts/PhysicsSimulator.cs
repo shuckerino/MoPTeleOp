@@ -1,5 +1,6 @@
 using Meta.WitAi.Utilities;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -14,7 +15,8 @@ public class PhysicsSimulator : MonoBehaviour
     float startingAngle = -180.0f;          // Starting angle for simulation
     float endingAngle = 180.0f;            // Ending angle for simulation
 
-    Dictionary<int, List<float>> collisionAngles = new Dictionary<int, List<float>>();
+    bool newResultAvailable = false;
+    ConcurrentDictionary<int, List<float>> collisionAngles = new ConcurrentDictionary<int, List<float>>();
     Dictionary<int, List<float>> lastResult = new Dictionary<int, List<float>>();
 
     void Start()
@@ -24,6 +26,7 @@ public class PhysicsSimulator : MonoBehaviour
 
     public void SimulateJointAngles(float[] currentAngles)
     {
+        newResultAvailable = false;
         int jointCount = jointTransforms.Length;
         collisionAngles.Clear();
         // run simulation for each joint
@@ -83,23 +86,24 @@ public class PhysicsSimulator : MonoBehaviour
             jointTransforms[a].localRotation = initialJointRotation;
 
             if (collisionAngleValues.Count == 2)
-                collisionAngles.Add(a, collisionAngleValues);
+                collisionAngles.TryAdd(a, collisionAngleValues);
             else if (collisionAngleValues.Count == 1)
             {
                 collisionAngleValues.Add(0.0f);
-                collisionAngles.Add(a, collisionAngleValues);
+                collisionAngles.TryAdd(a, collisionAngleValues);
             }
             else
             {
                 List<float> list = new List<float> { 180.0f, 180.0f };
-                collisionAngles.Add(a, list);
+                collisionAngles.TryAdd(a, list);
 
             }
-            lock (lastResult)
-            {
-                lastResult = collisionAngles;
-            }
         }
+        lock (lastResult)
+        {
+            lastResult = new Dictionary<int, List<float>>(collisionAngles);
+        }
+        newResultAvailable = true;
     }
 
     private bool CheckForCollision()
@@ -132,10 +136,16 @@ public class PhysicsSimulator : MonoBehaviour
         var result = new Dictionary<int, List<float>>();
         lock (lastResult)
         {
-            result = lastResult;
+            // Return a copy to ensure thread safety
+            result = new Dictionary<int, List<float>>(lastResult);
         }
 
         return result;
+    }
+
+    public bool IsNewResultAvailable()
+    {
+        return newResultAvailable;
     }
 
 }

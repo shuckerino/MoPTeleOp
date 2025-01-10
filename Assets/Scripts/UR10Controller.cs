@@ -70,60 +70,60 @@ public class UR10Controller : MonoBehaviour
             // Apply the rotation to the joint
             jointList[i].transform.localRotation = targetRotation;
         }
-        _time += Time.deltaTime;
-        while (_time >= _interval)
+        //_time += Time.deltaTime;
+        //while (_time >= _interval)
+        //{
+        simulator.SimulateJointAngles(currentAngles);
+        Dictionary<int, List<float>> collisionAngles = simulator.GetLastSimulationResult();
+        for (int k = 0; k < jointValuesInDegrees.Length; k++)
         {
-            simulator.SimulateJointAngles(currentAngles);
-            Dictionary<int, List<float>> collisionAngles = simulator.GetLastSimulationResult();
-            for (int k = 0; k < jointValuesInDegrees.Length; k++)
+            int posIndex, negIndex;
+            if (k < 6 && jointSign[k] == -1f)
             {
-                int posIndex, negIndex;
-                if (k < 6 && jointSign[k] == -1f)
-                {
-                    posIndex = 1;
-                    negIndex = 0;
-                }
-                else
-                {
-                    posIndex = 0;
-                    negIndex = 1;
-                }
-
-                if (collisionAngles.ContainsKey(k))
-                {
-                    Debug.Log($"Joint Limits for Joint_{k}: pos_{collisionAngles[k][posIndex]},  neg_{collisionAngles[k][negIndex]}");
-                }
-                else
-                {
-                    Debug.Log($"Joint Limits for Joint_{k}: Free");
-                }
-
-                if (k == 0)
-                {
-                    Joint0Limits.text = $"Joint 0: +{collisionAngles[k][posIndex]}, -{collisionAngles[k][negIndex]}";
-                }
-                else if (k == 1)
-                {
-                    Joint1Limits.text = $"Joint 1: +{collisionAngles[k][posIndex]}, -{collisionAngles[k][negIndex]}";
-
-                }
-                else if (k == 2)
-                {
-                    Joint2Limits.text = $"Joint 2: +{collisionAngles[k][posIndex]}, -{collisionAngles[k][negIndex]}";
-
-                }
-                else if (k == 3)
-                {
-                    Joint3Limits.text = $"Joint 3: +{collisionAngles[k][posIndex]}, -{collisionAngles[k][negIndex]}";
-                }
-                else if (k == 4)
-                {
-                    Joint4Limits.text = $"Joint 4: +{collisionAngles[k][posIndex]}, -{collisionAngles[k][negIndex]}";
-                }
+                posIndex = 1;
+                negIndex = 0;
+            }
+            else
+            {
+                posIndex = 0;
+                negIndex = 1;
             }
 
-            _time -= _interval;
+            if (collisionAngles.ContainsKey(k))
+            {
+                Debug.Log($"Joint Limits for Joint_{k}: pos_{collisionAngles[k][posIndex]},  neg_{collisionAngles[k][negIndex]}");
+            }
+            else
+            {
+                Debug.Log($"Joint Limits for Joint_{k}: Free");
+            }
+
+            if (k == 0)
+            {
+                Joint0Limits.text = $"Joint 0: +{collisionAngles[k][posIndex]}, -{collisionAngles[k][negIndex]}";
+            }
+            else if (k == 1)
+            {
+                Joint1Limits.text = $"Joint 1: +{collisionAngles[k][posIndex]}, -{collisionAngles[k][negIndex]}";
+
+            }
+            else if (k == 2)
+            {
+                Joint2Limits.text = $"Joint 2: +{collisionAngles[k][posIndex]}, -{collisionAngles[k][negIndex]}";
+
+            }
+            else if (k == 3)
+            {
+                Joint3Limits.text = $"Joint 3: +{collisionAngles[k][posIndex]}, -{collisionAngles[k][negIndex]}";
+            }
+            else if (k == 4)
+            {
+                Joint4Limits.text = $"Joint 4: +{collisionAngles[k][posIndex]}, -{collisionAngles[k][negIndex]}";
+            }
         }
+
+        //    _time -= _interval;
+        //}
 
         //pincherController.grip = jointValues[6];
         //gripperController.gripRatio = jointValues[6];
@@ -149,8 +149,8 @@ public class UR10Controller : MonoBehaviour
         }
 
         // Gripper value
-        GUI.Label(new Rect(boundary, boundary + (6 * 2 + 1) * labelHeight, labelHeight * 4, labelHeight), "Gripper: ");
-        jointValuesInDegrees[6] = GUI.HorizontalSlider(new Rect(boundary + labelHeight * 4, boundary + (6 * 2 + 1) * labelHeight + labelHeight / 4, labelHeight * 5, labelHeight), jointValuesInDegrees[6], 0, 1);
+        //    GUI.Label(new Rect(boundary, boundary + (6 * 2 + 1) * labelHeight, labelHeight * 4, labelHeight), "Gripper: ");
+        //    jointValuesInDegrees[6] = GUI.HorizontalSlider(new Rect(boundary + labelHeight * 4, boundary + (6 * 2 + 1) * labelHeight + labelHeight / 4, labelHeight * 5, labelHeight), jointValuesInDegrees[6], 0, 1);
     }
 
 

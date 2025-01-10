@@ -58,7 +58,7 @@ public class SimulationConnector : MonoBehaviour
     {
         while (true)
         {
-            if (physicsSimulator.GetLastSimulationResult().Count == 0) continue;
+            //if (physicsSimulator.GetLastSimulationResult().Count == 0) continue;
 
             try
             {
@@ -70,11 +70,14 @@ public class SimulationConnector : MonoBehaviour
                         Debug.Log("Received: " + message);
                         string[] messages = message.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
+                        //if (physicsSimulator != null && physicsSimulator.IsNewResultAvailable())
+                        //{
                         for (int i = 0; i < messages.Length; i++)
                         {
                             string jointLimits = SynchronizeReceivedDataWithSimulation(messages[i]);
                             SendJointLimits(jointLimits);
                         }
+                        //}
                     }
                 }
             }
@@ -134,12 +137,28 @@ public class SimulationConnector : MonoBehaviour
             // Get a stream object for writing. 			
             if (networkStream.CanWrite)
             {
-                string serverMessage = message == string.Empty ? "Empty message" : message;
-                // Convert string message to byte array.                 
+                string serverMessage = string.IsNullOrEmpty(message) ? "Empty message" : message;
+
+                // Convert string message to byte array.
                 byte[] serverMessageAsByteArray = Encoding.ASCII.GetBytes(serverMessage);
-                // Write byte array to socketConnection stream.               
-                networkStream.Write(serverMessageAsByteArray, 0, 1024);
-                Debug.Log("Server sent his message - should be received by client");
+
+                // Prepend the message length as a 4-byte integer.
+                int messageLength = serverMessageAsByteArray.Length;
+                byte[] messageLengthBytes = BitConverter.GetBytes(messageLength);
+
+                if (BitConverter.IsLittleEndian)
+                {
+                    Array.Reverse(messageLengthBytes); // Ensure big-endian format for cross-platform compatibility.
+                }
+
+                // Combine the length header and the message.
+                byte[] dataToSend = new byte[messageLengthBytes.Length + serverMessageAsByteArray.Length];
+                Buffer.BlockCopy(messageLengthBytes, 0, dataToSend, 0, messageLengthBytes.Length);
+                Buffer.BlockCopy(serverMessageAsByteArray, 0, dataToSend, messageLengthBytes.Length, serverMessageAsByteArray.Length);
+
+                // Write the data to the network stream.
+                networkStream.Write(dataToSend, 0, dataToSend.Length);
+
             }
         }
         catch (SocketException socketException)
