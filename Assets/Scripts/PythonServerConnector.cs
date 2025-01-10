@@ -12,7 +12,7 @@ using System.Net.Http;
 using UnityEngine.Analytics;
 using System.Threading.Tasks;
 
-public class SimulationConnector : MonoBehaviour
+public class PythonServerConnector : MonoBehaviour
 {
     private TcpClient tcpClient;
     private NetworkStream networkStream;

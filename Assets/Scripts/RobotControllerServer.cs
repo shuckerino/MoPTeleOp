@@ -54,10 +54,10 @@ public class RobotControllerServer : MonoBehaviour
 	void Start()
 	{
 		// Start TcpServer background thread 		
-		tcpListenerThread = new Thread(new ThreadStart(ListenForIncommingRequests));
-		tcpListenerThread.IsBackground = true;
-		tcpListenerThread.Start();
-		SimulationConnector simulationConnector = new SimulationConnector();
+		//tcpListenerThread = new Thread(new ThreadStart(ListenForIncommingRequests));
+		//tcpListenerThread.IsBackground = true;
+		//tcpListenerThread.Start();
+		PythonServerConnector simulationConnector = new PythonServerConnector();
 		simulationConnector.ConnectToPythonServer();
     }
 
